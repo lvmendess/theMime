@@ -44,11 +44,18 @@ public class Game
         office = new Room("in the computing admin office");
         
         // initialise room exits
-        outside.setExits(null, theater, lab, pub);
-        theater.setExits(null, null, null, outside);
-        pub.setExits(null, outside, null, null);
-        lab.setExits(outside, office, null, null);
-        office.setExits(null, null, null, lab);
+        outside.setExit("east", theater);
+        outside.setExit("south", lab);
+        outside.setExit("west", pub);
+
+        theater.setExit("west", outside);
+
+        pub.setExit("east", outside);
+
+        lab.setExit("north", outside);
+        lab.setExit("east", office);
+
+        office.setExit("west", lab);
 
         currentRoom = outside;  // start game outside
     }
@@ -71,15 +78,15 @@ public class Game
         System.out.println("Thank you for playing.  Good bye.");
     }
 
-    private void printLocationInfo() {
-        System.out.println("You are " + currentRoom.getDescription());
-        System.out.print("Exits: ");
-        System.out.print(currentRoom.getExitString());
-    }
-
     /**
      * Print out the opening message for the player.
      */
+
+    private void printLocationInfo() { //tarefa 2
+        System.out.println(currentRoom.getLongDescription());
+        System.out.println();
+    }
+
     private void printWelcome()
     {
         System.out.println();
@@ -87,7 +94,7 @@ public class Game
         System.out.println("World of Zuul is a new, incredibly boring adventure game.");
         System.out.println("Type 'help' if you need help.");
         System.out.println();
-        printLocationInfo();
+        printLocationInfo();//tarefa 2
     }
 
     /**
@@ -150,26 +157,12 @@ public class Game
 
         // Try to leave current room.
         Room nextRoom = null;
-        if(direction.equals("north")) {
-            nextRoom = currentRoom.northExit;
-        }
-        if(direction.equals("east")) {
-            nextRoom = currentRoom.eastExit;
-        }
-        if(direction.equals("south")) {
-            nextRoom = currentRoom.southExit;
-        }
-        if(direction.equals("west")) {
-            nextRoom = currentRoom.westExit;
-        }
-
+        nextRoom = currentRoom.getExit(direction);//tarefa 3
         if (nextRoom == null) {
             System.out.println("There is no door!");
-        }
-        else {
+        }else {
             currentRoom = nextRoom;
             printLocationInfo();
-            System.out.println();
         }
     }
 

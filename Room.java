@@ -1,3 +1,5 @@
+import java.util.*;
+
 /**
  * Class Room - a room in an adventure game.
  *
@@ -15,10 +17,8 @@
 public class Room 
 {
     public String description;
-    public Room northExit;
-    public Room southExit;
-    public Room eastExit;
-    public Room westExit;
+    public String longDescription;
+    private Map<String, Room> exits = new HashMap<>();
 
     /**
      * Create a room described "description". Initially, it has
@@ -39,43 +39,32 @@ public class Room
      * @param south The south exit.
      * @param west The west exit.
      */
-    public void setExits(Room north, Room east, Room south, Room west) 
-    {
-        if(north != null) {
-            northExit = north;
+
+    public void setExit(String direction, Room neighbour) { //tarefa 5
+        exits.put(direction, neighbour);
+    }
+    
+    /**
+     * Retorna uma descrição das saídas deste Room,
+     * por exemplo, "Exits: north west".
+     * @return Uma descrição das saídas disponíveis.
+    */
+    public String getExitString() { //tarefa 4
+        String exitStr = "";
+        for (String key : exits.keySet()) { //tarefa 6
+            exitStr += " "+key;
         }
-        if(east != null) {
-            eastExit = east;
-        }
-        if(south != null) {
-            southExit = south;
-        }
-        if(west != null) {
-            westExit = west;
-        }
+        return exitStr;
     }
 
-    /**
-    * Retorna uma descrição das saídas deste Room,
-    * por exemplo, "Exits: north west".
-    * @return Uma descrição das saídas disponíveis.
-    */
-    public String getExitString()
-    {
-        String avaliableExits = "";
-        if(northExit != null) {
-            avaliableExits += "north ";
+    public Room getExit(String direction) { //tarefa 3
+        Room sala = null;
+        for (String key : exits.keySet()) { 
+            if (key.equals(direction)) {
+                sala = exits.get(direction);
+            }
         }
-        if(eastExit != null) {
-            avaliableExits += "east ";
-        }
-        if(southExit != null) {
-            avaliableExits += "south ";
-        }
-        if(westExit != null) {
-            avaliableExits += "west ";
-        }
-        return avaliableExits;
+        return sala;
     }
 
     /**
@@ -84,6 +73,12 @@ public class Room
     public String getDescription()
     {
         return description;
+    }
+
+    public String getLongDescription() //tarefa 7
+    {
+        longDescription = "You are "+description+ "\n" +"Exits:"+ getExitString();
+        return longDescription;
     }
 
 }

@@ -19,6 +19,7 @@ public class Room
     public String description;
     public String longDescription;
     private Map<String, Room> exits = new HashMap<>();
+    private ArrayList<Item> items = new ArrayList<>();
 
     /**
      * Create a room described "description". Initially, it has
@@ -77,8 +78,44 @@ public class Room
 
     public String getLongDescription() //tarefa 7
     {
-        longDescription = "You are "+description+ "\n" +"Exits:"+ getExitString();
+        longDescription = "You are " + description;
+        if (items.size()!=0) {
+            longDescription += "\nThere is ";
+            for (Item item : items) {
+                longDescription += item.getDescription();
+                System.out.println();
+            }
+        } else {
+            longDescription += "\nNo items here";
+        }
+        longDescription += "\n" + "Exits:" + getExitString();
+
         return longDescription;
+    }
+    
+    public void addItem(String name, String description, double weight) {//create and add item to room
+        Item item = new Item(name, description, weight);
+        items.add(item);
+    }
+
+    public boolean isItem(String name) {//checks if item exists in the room
+        boolean isItem = false;
+        for (Item item : items) {
+            if (item.getItemName().equals(name)) {
+                isItem = true;
+            }
+        }
+        return isItem;
+    }
+
+    public Item getItem(String name) { //gets the item
+        Item getThis = null;
+        for (Item item : items) {
+            if (item.getItemName().equals(name)) {
+                getThis = item;
+            }
+        }
+        return getThis;
     }
 
 }

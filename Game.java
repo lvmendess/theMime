@@ -19,6 +19,7 @@ public class Game
 {
     private Parser parser;
     private Room currentRoom;
+    private Player player;
         
     /**
      * Create the game and initialise its internal map.
@@ -57,6 +58,10 @@ public class Game
 
         office.setExit("west", lab);
 
+        //add items
+
+        office.addItem("phone", "an old rotary dial phone", 1.1);
+
         currentRoom = outside;  // start game outside
     }
 
@@ -64,7 +69,9 @@ public class Game
      *  Main play routine.  Loops until end of play.
      */
     public void play() 
-    {            
+    {
+        player = new Player();
+        player.move(currentRoom);
         printWelcome();
 
         // Enter the main command loop.  Here we repeatedly read commands and
@@ -121,6 +128,15 @@ public class Game
         else if (commandWord.equals("quit")) {
             wantToQuit = quit(command);
         }
+        else if(commandWord.equals("look")){
+            look(command);//tarefa 8
+        }
+        else if (commandWord.equals("inventory")) {
+            inventory(command);
+        }
+        else if (commandWord.equals("take")) {
+            take(command);
+        }
 
         return wantToQuit;
     }
@@ -138,7 +154,7 @@ public class Game
         System.out.println("around at the university.");
         System.out.println();
         System.out.println("Your command words are:");
-        System.out.println("   go quit help");
+        parser.showCommands();
     }
 
     /** 
@@ -162,6 +178,7 @@ public class Game
             System.out.println("There is no door!");
         }else {
             currentRoom = nextRoom;
+            player.move(currentRoom);
             printLocationInfo();
         }
     }
@@ -173,12 +190,51 @@ public class Game
      */
     private boolean quit(Command command) 
     {
-        if(command.hasSecondWord()) {
+        if (command.hasSecondWord()) {
             System.out.println("Quit what?");
             return false;
+        } else {
+            return true; // signal that we want to quit
         }
-        else {
-            return true;  // signal that we want to quit
+    }
+    
+    /*
+     * repeats the room description
+     */
+    private void look(Command command) {
+        if (command.hasSecondWord()) {
+            System.out.println("look what?");
+        } else {
+            System.out.println(currentRoom.longDescription);
         }
+    }
+
+    /*
+     * prints inventory list
+     */
+    private void inventory(Command command) {
+        if (command.hasSecondWord()) {
+            System.out.println("inventory what?");
+        } else {
+            player.showInventory();
+        }
+    }
+
+    /*
+     * add item to inventory
+     */
+    private void take(Command command) {
+        if(!command.hasSecondWord()) {
+            System.out.println("take what?");
+            return;
+        } else {
+            String itemName = command.getSecondWord();
+            if (currentRoom.isItem(itemName)) {
+                Item item = currentRoom.getItem(itemName);
+                player.addToInventory(itemName, item);
+                System.out.println(itemName + " has been added to your inventory");
+            }
+        }
+
     }
 }

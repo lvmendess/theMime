@@ -8,7 +8,7 @@ public class Player {
         inventory = new Inventory();
     }
 
-    public void move(Room room) { //updates player's currento location
+    public void move(Room room) { //updates player's current location
         currentLocation = room;
     }
     

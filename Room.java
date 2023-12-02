@@ -93,12 +93,12 @@ public class Room
         return longDescription;
     }
     
-    public void addItem(String name, String description, double weight) {//create and add item to room
+    public void addItem(String name, String description, double weight) { //create and add item to room
         Item item = new Item(name, description, weight);
         items.add(item);
     }
 
-    public boolean isItem(String name) {//checks if item exists in the room
+    public boolean isItem(String name) { //returns true if specified item is found in the room
         boolean isItem = false;
         for (Item item : items) {
             if (item.getItemName().equals(name)) {
@@ -108,7 +108,7 @@ public class Room
         return isItem;
     }
 
-    public Item getItem(String name) { //gets the item
+    public Item getItem(String name) { //returns the item
         Item getThis = null;
         for (Item item : items) {
             if (item.getItemName().equals(name)) {
@@ -116,6 +116,16 @@ public class Room
             }
         }
         return getThis;
+    }
+
+    public void removeItem(String name) {
+        Iterator iterator = items.iterator();
+        while (iterator.hasNext()) {
+            Item currentItem = (Item) iterator.next();
+            if (name.equals(currentItem.getItemName())) {
+                iterator.remove();
+            }
+        }
     }
 
 }

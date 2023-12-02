@@ -20,6 +20,7 @@ public class Game
     private Parser parser;
     private Room currentRoom;
     private Player player;
+    private Item instanceItem;
         
     /**
      * Create the game and initialise its internal map.
@@ -230,9 +231,13 @@ public class Game
         } else {
             String itemName = command.getSecondWord();
             if (currentRoom.isItem(itemName)) {
-                Item item = currentRoom.getItem(itemName);
-                player.addToInventory(itemName, item);
+                instanceItem = currentRoom.getItem(itemName);
+                player.addToInventory(itemName, instanceItem);
                 System.out.println(itemName + " has been added to your inventory");
+                currentRoom.removeItem(itemName);
+                instanceItem = null; // cleans the instance item
+            } else {
+                System.out.println("Item not found.");
             }
         }
 

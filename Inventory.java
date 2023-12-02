@@ -11,11 +11,11 @@ public class Inventory {
                 System.out.println(name);
             }
         } else {
-            System.out.println("your inventory is empty");
+            System.out.println("Your inventory is empty");
         }
     }
 
-    public void addItem(String name, Item item) { //adds item
+    public void addItem(String name, Item item) { //adds item to the inventory
         inventory.put(name, item);
     }
 }

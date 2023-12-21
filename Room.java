@@ -68,6 +68,14 @@ public class Room
         return sala;
     }
 
+    public ArrayList<String> roomsList(){
+        ArrayList<String> exitList = new ArrayList<>();
+        for (String key : exits.keySet()) {
+            exitList.add(key);
+        }
+        return exitList;
+    }
+
     /**
      * @return The description of the room.
      */

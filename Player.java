@@ -1,16 +1,34 @@
+/**
+ *  Classe do jogador. Requer uma sala inicial para ser criado.
+ *  Se move através das salas e coleta itens delas. Seus itens
+ *  são armazenados no seu inventário.
+ * 
+ * @author  3LP
+ * @version 27.12.2023
+ */
+
 import java.util.*;
 
 public class Player {
     private Inventory inventory;
-    public Room currentLocation;
+    private Room currentLocation;
     private Stack<Room> roomTracker = new Stack<>();
     private double maxWeight;
     private double carryWeight;
     
-    public Player() {
+    public Player(Room startingRoom) {
+        currentLocation = startingRoom;
         inventory = new Inventory();
         maxWeight = 25.0; //kilograms
         carryWeight = 0.0;
+    }
+
+    public Room getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public Inventory getInventory() {
+        return inventory;
     }
 
     public void move(Room room) { //updates player's current location

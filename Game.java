@@ -1,25 +1,21 @@
 /**
- *  This class is the main class of the "World of Zuul" application. 
- *  "World of Zuul" is a very simple, text based adventure game.  Users 
- *  can walk around some scenery. That's all. It should really be extended 
- *  to make it more interesting!
+ *  Classe responsável por criar e gerir o jogo.
  * 
- *  To play this game, create an instance of this class and call the "play"
- *  method.
+ *  Cria e inicializa as demais classes: cria todas as salas,
+ *  cria o parser e inicia o jogo. Também verifica e executa
+ *  os comandos retornados pelo parser.
  * 
- *  This main class creates and initialises all the others: it creates all
- *  rooms, creates the parser and starts the game.  It also evaluates and
- *  executes the commands that the parser returns.
- * 
- * @author  Michael Kölling and David J. Barnes
- * @version 2016.02.29
+ * @author  3LP
+ * @version 27.12.2023
  */
 
 public class Game 
 {
     private Parser parser;
-    private Room currentRoom;
+    private Room playerStartingRoom;
     private Player player;
+    private Room mimeStartingRoom;
+    private Mime mime;
         
     /**
      * Create the game and initialise its internal map.
@@ -64,27 +60,28 @@ public class Game
         office.addItem("wallet", "a simple wallet, there's 10 dollars in it", 0.05);
         outside.addItem("bomb", "oppenheinmer's nuke", 4399.846);
 
-        currentRoom = outside;  // start game outside
+        playerStartingRoom = outside;  // start game outside
+        mimeStartingRoom = office; // sets the mime's initial room
     }
 
     /**
-     *  Main play routine.  Loops until end of play.
+     *  Main play routine. Loops until end of play.
      */
     public void play() 
     {
-        player = new Player();
-        player.currentLocation = currentRoom;
+        player = new Player(playerStartingRoom);
+        mime = new Mime(mimeStartingRoom);
         printWelcome();
 
         // Enter the main command loop.  Here we repeatedly read commands and
         // execute them until the game is over.
                 
         boolean finished = false;
-        while (! finished) {
+        while (!finished) {
             Command command = parser.getCommand();
             finished = processCommand(command);
         }
-        System.out.println("Thank you for playing.  Good bye.");
+        System.out.println("Thank you for playing. Good bye.");
     }
 
     /**
@@ -92,7 +89,7 @@ public class Game
      */
 
     private void printLocationInfo() { //tarefa 2
-        System.out.println(currentRoom.getLongDescription());
+        System.out.println(player.getCurrentLocation().getLongDescription());
         System.out.println();
     }
 
@@ -179,15 +176,14 @@ public class Game
         Room nextRoom = null;
         if (direction.equals("back")) { //tarefa 13
             nextRoom = player.goBackRoom();
-            currentRoom = nextRoom;
             printLocationInfo();
         } else {
-            nextRoom = currentRoom.getExit(direction);//tarefa 3
+            nextRoom = player.getCurrentLocation().getExit(direction);//tarefa 3
             if (nextRoom == null) {
                 System.out.println("There is no door!");
-            }else {
-                currentRoom = nextRoom;
-                player.move(currentRoom);
+            } else {
+                player.move(nextRoom);
+                mime.move();
                 printLocationInfo();
             }
         }
@@ -215,7 +211,7 @@ public class Game
         if (command.hasSecondWord()) {
             System.out.println("look what?");
         } else {
-            System.out.println(currentRoom.getLongDescription());
+            System.out.println(player.getCurrentLocation().getLongDescription());
         }
     }
 
@@ -233,26 +229,30 @@ public class Game
     private void take(Command command) {
         if (!command.hasSecondWord()) {
             System.out.println("take what?");
-        } else {
+        } else if (player.getCurrentLocation().getItem(command.getSecondWord()) != null) {
             String itemName = command.getSecondWord();
-            if (player.addToInventory(itemName, currentRoom.getItem(itemName))) {
-                currentRoom.removeItem(itemName);
+            if (player.addToInventory(itemName, player.getCurrentLocation().getItem(itemName))) {
+                player.getCurrentLocation().removeItem(itemName);
                 System.out.println(itemName + " has been added to your inventory");
             } else {
-                System.out.println("you can't carry this item now. try dropping something you have");
+                System.out.println("You can't carry this item, due to it's weight.");
             }
+        } else {
+            System.out.println("Item not found.");
         }
     }
 
     private void drop(Command command) {
         if (!command.hasSecondWord()) {
             System.out.println("drop what?");
-        } else {
+        } else if (player.getInventory().getItem(command.getSecondWord()) != null) {
             String itemName = command.getSecondWord();
             Item item = player.getItemFromInventory(itemName);
             player.removeFromInventory(itemName);
-            currentRoom.addItem(itemName, item);
+            player.getCurrentLocation().addItem(itemName, item);
             System.out.println(itemName + " has been removed to your inventory");
+        } else {
+            System.out.println("Item not found.");
         }
     }
 

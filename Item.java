@@ -1,25 +1,39 @@
+import java.util.ArrayList;
+
 public class Item {
+    private double weight;
     private String name;
     private String description;
-    private double weight;
-    //private boolean taken;
+    private int lifespan; //how much damage it can take
 
-    public Item(String itemName, String itemDescription, double itemWeight) {
+    public Item(String itemName, String itemDescription, double itemWeight, int lifespan) {
         name = itemName;
         description = itemDescription;
         weight = itemWeight;
-        //taken = false;
+        this.lifespan = lifespan;
     }
 
     public String getItemName() {
         return name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public double getItemWeight() {
         return weight;
     }
 
-    public String getDescription() {
-        return description;
+    public int getItemLifespan() {
+        return lifespan;
+    }
+
+    public void takeDamage() {
+        lifespan--;
+    }
+
+    public void use() {
+        takeDamage();
     }
 }

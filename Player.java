@@ -6,6 +6,7 @@ public class Player {
     private Stack<Room> roomTracker = new Stack<>();
     private double maxWeight;
     private double carryWeight;
+    public Item wieldingItem;
     
     public Player() {
         inventory = new Inventory();
@@ -49,6 +50,14 @@ public class Player {
             return currentLocation;
         } else {
             return currentLocation = roomTracker.pop();
+        }
+    }
+
+    public void setWieldingItem(String itemName) {
+        if (inventory.ownsItem(itemName)) {
+            wieldingItem = inventory.getItem(itemName);
+        } else {
+            System.out.println("it appears that this item isn't in your inventory");
         }
     }
 }

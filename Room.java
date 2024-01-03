@@ -84,13 +84,13 @@ public class Room
         return sala;
     }
 
-    public ArrayList<String> roomsList(){
+    /*public ArrayList<String> roomsList(){
         ArrayList<String> exitList = new ArrayList<>();
         for (String key : exits.keySet()) {
             exitList.add(key);
         }
         return exitList;
-    }
+    }*/
 
     /**
      * @return The description of the room.
@@ -158,6 +158,16 @@ public class Room
             hidden = false;
             System.out.println(getLongDescription());
         }
+    }
+
+    public boolean itemExists(String itemName){
+        boolean exists = false;
+        for(String item : items.keySet()){
+            if(item.equals(itemName)){
+                exists = true;
+            }
+        }
+        return exists;
     }
     
     

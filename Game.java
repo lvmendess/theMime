@@ -94,7 +94,7 @@ public class Game
     public void play() 
     {
         player = new Player();
-        player.currentLocation = currentRoom;
+        player.setCurrentRoom(currentRoom);
         printWelcome();
 
         // Enter the main command loop.  Here we repeatedly read commands and
@@ -221,7 +221,7 @@ public class Game
     }
     
     private void useItem(Command command) {
-        player.wieldingItem.use();
+        
     }
 
     private void wieldItem(Command command) {
@@ -230,7 +230,7 @@ public class Game
         } else {
             String itemName = command.getSecondWord();
             player.setWieldingItem(itemName);
-            if (player.wieldingItem.getItemName().equals(itemName)) {
+            if (player.getWieldingItem().getItemName().equals(itemName)) {
                 System.out.println("you are currently wielding "+itemName);
             }
         }
@@ -279,11 +279,14 @@ public class Game
             System.out.println("take what?");
         } else {
             String itemName = command.getSecondWord();
-            if (player.addToInventory(itemName, currentRoom.getItem(itemName))) {
-                currentRoom.removeItem(itemName);
-                System.out.println(itemName + " has been added to your inventory");
-            } else {
-                System.out.println("you can't carry this item now. try dropping something you have");
+            if(currentRoom.itemExists(itemName)){
+                if(!player.ownsItem(itemName)){
+                    player.addToInventory(itemName, currentRoom.getItem(itemName));
+                    currentRoom.removeItem(itemName);
+                    System.out.println(itemName + " has been added to your inventory");
+                }
+            }else {
+                System.out.println("this item is no longer in this room");
             }
         }
     }
@@ -293,10 +296,14 @@ public class Game
             System.out.println("drop what?");
         } else {
             String itemName = command.getSecondWord();
-            Item item = player.getItemFromInventory(itemName);
-            player.removeFromInventory(itemName);
-            currentRoom.addItem(itemName, item);
-            System.out.println(itemName + " has been removed to your inventory");
+            if(player.ownsItem(itemName)){
+                Item item = player.getItemFromInventory(itemName);
+                player.removeFromInventory(itemName);
+                currentRoom.addItem(itemName, item);
+                System.out.println(itemName + " has been removed to your inventory");
+            }else{
+                System.out.println("this item is no longer in your inventory");
+            }
         }
     }
 

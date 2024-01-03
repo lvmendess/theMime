@@ -2,8 +2,7 @@ import java.util.*;
 public class Inventory {
     private Map<String, Item> inventory = new HashMap<>();
 
-    public Inventory() {
-    };
+    public Inventory() {};
 
     public void printInventory() { //prints inventory
         if (inventory.size() != 0) {
@@ -24,6 +23,9 @@ public class Inventory {
     }
 
     public Item getItem(String itemName) {
+        if(ownsItem(itemName)){
+
+        }
         return inventory.get(itemName);
     }
 

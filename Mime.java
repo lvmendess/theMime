@@ -4,16 +4,30 @@ import java.util.*;
 
 public class Mime extends Character{
     
-    private ArrayList<String> exits;
+    //private ArrayList<String> exits;
     private Room currentRoom;
     private int healthBar;
-    private Random roomSeletor = new Random();
-    private Character Mime;
+    private double attack;
+    private double defense;
+    //private Random roomSeletor = new Random();
 
     public Mime(Room startingRoom){
         super("the mime is here");
         currentRoom = startingRoom;
         currentRoom.addCharacter(this);
+        healthBar = 1000;
+        attack = 70;
+        defense = 50;
+    }
+
+    public Room getCurrentRoom(){
+        return currentRoom;
+    }
+
+    public void attack(){}
+
+    public void takeDamage(double damage){
+        healthBar -= damage;
     }
 
     /*public void move(){

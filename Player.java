@@ -6,7 +6,7 @@ public class Player {
     private Stack<Room> roomTracker = new Stack<>();
     private double maxWeight;
     private double carryWeight;
-    private Item wieldingItem;
+    private Item wieldingWeapon;
     private double attack;
     private double defense;
     private double healthBar;
@@ -17,7 +17,7 @@ public class Player {
         carryWeight = 0.0;
         attack = 50;
         defense = 35;
-        healthBar = 100;
+        healthBar = 1000;
     }
 
     public void setCurrentRoom(Room room){
@@ -79,13 +79,7 @@ public class Player {
         return inventory.ownsItem(itemName);
     }
 
-    public void attack(){
-        
-    }
-
-    public void takeDamage(){
-        if(healthBar>0){
-            
-        }
+    public void takeDamage(double damage){
+        healthBar -= damage;
     }
 }

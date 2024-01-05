@@ -269,7 +269,7 @@ public class Game
                     }
                 }
             }
-        }
+        } // else {avise aqui que o player não consegue atacar por estar sem arma}
     }
 
     private void wieldItem(Command command) {

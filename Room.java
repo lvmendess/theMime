@@ -22,8 +22,6 @@ public class Room
     private Map<String, Room> exits = new HashMap<>();
     private HashMap<String, Item> items = new HashMap<>();
     private ArrayList<Character> characters = new ArrayList<>();
-    private boolean hidden;
-    private Item openingTool;
 
     /**
      * Create a room described "description". Initially, it has
@@ -31,15 +29,10 @@ public class Room
      * "an open court yard".
      * @param description The room's description.
      */
-    public Room(String name, String description, boolean hidden) 
+    public Room(String name, String description) 
     {
         this.roomName = name;
         this.description = description;
-        this.hidden = hidden;
-    }
-
-    public void setOpeningTool(Item tool) { //set tool necessary to open hidden room
-        openingTool = tool;
     }
 
     public String getName() {
@@ -67,9 +60,7 @@ public class Room
     public String getExitString() { //tarefa 4
         String exitStr = "";
         for (String key : exits.keySet()) { //tarefa 6
-            if (!exits.get(key).hidden) { //checks whether the room is hidden as to not show its entrance to the player
-                exitStr += " " + key;
-            }
+            exitStr += " " + key;
         }
         return exitStr;
     }
@@ -84,13 +75,13 @@ public class Room
         return sala;
     }
 
-    public ArrayList<String> roomsList(){
+    /*public ArrayList<String> roomsList(){
         ArrayList<String> exitList = new ArrayList<>();
         for (String key : exits.keySet()) {
             exitList.add(key);
         }
         return exitList;
-    }
+    }*/
 
     /**
      * @return The description of the room.
@@ -114,7 +105,7 @@ public class Room
         }
         longDescription += "\n" + "Exits:" + getExitString();
 
-        if (characters.size() != 0) {
+        if (characters.size() > 0) {
             for (Character character : characters) {
                 longDescription += "\n"+character.getDescription();
             }
@@ -123,14 +114,19 @@ public class Room
         return longDescription;
     }
     
-    public void addItem(String name, String description, double weight, int lifespan) {
-        Item item = new Item(name, description, weight, lifespan);
+    public void addItem(String name, String description, double weight, int lifespan, double damage) {
+        Item item = new Item(name, description, weight, lifespan, damage);
         items.put(name, item);
     }
 
     public void addItem(String name, Item item) {
         items.put(name, item);
     }
+
+    /*public void addWeapon(String name, String description, double weight, double damage, int lifespan, String type) {
+        Weapon weapon = new Weapon(name, description, weight, damage, lifespan, type);
+        items.put(name, weapon);
+    }*/
 
     public Item getItem(String itemName) {
         return items.get(itemName);
@@ -150,7 +146,7 @@ public class Room
         characters.remove(character);
     }
     
-    public void unlockRoom(Item tool) { //open hidden room
+    /*public void unlockRoom(Item tool) { //open hidden room
         if (hidden) {
             while (tool.equals(openingTool) == false) {
                 System.out.println("this tool cannot open the room, find something else");
@@ -158,6 +154,16 @@ public class Room
             hidden = false;
             System.out.println(getLongDescription());
         }
+    }*/
+
+    public boolean itemExists(String itemName){
+        boolean exists = false;
+        for(String item : items.keySet()){
+            if(item.equals(itemName)){
+                exists = true;
+            }
+        }
+        return exists;
     }
     
     

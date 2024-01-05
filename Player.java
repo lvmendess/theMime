@@ -2,19 +2,30 @@ import java.util.*;
 
 public class Player {
     private Inventory inventory;
-    public Room currentLocation;
+    private Room currentLocation;
     private Stack<Room> roomTracker = new Stack<>();
     private double maxWeight;
     private double carryWeight;
-    public Item wieldingItem;
+    private Item wieldingItem;
+    private double healthBar;
     
     public Player() {
         inventory = new Inventory();
         maxWeight = 25.0; //kilograms
         carryWeight = 0.0;
+        healthBar = 1000;
+    }
+
+    public void setCurrentRoom(Room room){
+        currentLocation = room;
     }
 
     public void move(Room room) { //updates player's current location
+        if (currentLocation.getName().contains("initial")) {
+            while(roomTracker.size()!=0){
+                roomTracker.pop();
+            }
+        }
         roomTracker.push(currentLocation); //tarefa 13
         currentLocation = room;
     }
@@ -32,6 +43,8 @@ public class Player {
             inventory.addItem(name, item);
             carryWeight += item.getItemWeight();
             itemAdded = true;
+        } else {
+            System.out.println("you can't carry this");
         }
         return itemAdded;
     }
@@ -55,9 +68,33 @@ public class Player {
 
     public void setWieldingItem(String itemName) {
         if (inventory.ownsItem(itemName)) {
-            wieldingItem = inventory.getItem(itemName);
+             wieldingItem = inventory.getItem(itemName);
         } else {
             System.out.println("it appears that this item isn't in your inventory");
         }
+        
+    }
+
+    public Item getWieldingItem(){
+        return wieldingItem;
+    }
+
+    public boolean ownsItem(String itemName){
+        return inventory.ownsItem(itemName);
+    }
+
+    public void takeDamage(double damage) {
+        if (healthBar > damage) {
+            healthBar -= damage;
+        } else {
+            while (healthBar > 0) {
+                healthBar--;
+                damage--;
+            }
+        }
+    }
+    
+    public double getHealthBar() {
+        return healthBar;
     }
 }

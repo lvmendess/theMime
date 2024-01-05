@@ -1,20 +1,24 @@
-import java.util.ArrayList;
-
 public class Item {
-    private double weight;
-    private String name;
-    private String description;
-    private int lifespan; //how much damage it can take
+    protected double weight;
+    protected String name;
+    protected String description;
+    protected int lifespan; //how much damage it can take
+    protected double damage;
 
-    public Item(String itemName, String itemDescription, double itemWeight, int lifespan) {
+    public Item(String itemName, String itemDescription, double itemWeight, int lifespan, double damage) {
         name = itemName;
         description = itemDescription;
         weight = itemWeight;
         this.lifespan = lifespan;
+        this.damage = damage;
     }
 
     public String getItemName() {
         return name;
+    }
+
+    public double getDamage() {
+        return damage;
     }
 
     public String getDescription() {
@@ -29,11 +33,8 @@ public class Item {
         return lifespan;
     }
 
-    public void takeDamage() {
-        lifespan--;
+    public void takeDamage(double damage) {
+        lifespan -= damage;
     }
 
-    public void use() {
-        takeDamage();
-    }
 }

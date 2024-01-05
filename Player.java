@@ -2,26 +2,16 @@ import java.util.*;
 
 public class Player {
     private Inventory inventory;
-    private Room currentLocation;
+    public Room currentLocation;
     private Stack<Room> roomTracker = new Stack<>();
     private double maxWeight;
     private double carryWeight;
-    private Item wieldingWeapon;
-    private double attack;
-    private double defense;
-    private double healthBar;
+    public Item wieldingItem;
     
     public Player() {
         inventory = new Inventory();
         maxWeight = 25.0; //kilograms
         carryWeight = 0.0;
-        attack = 50;
-        defense = 35;
-        healthBar = 1000;
-    }
-
-    public void setCurrentRoom(Room room){
-        currentLocation = room;
     }
 
     public void move(Room room) { //updates player's current location
@@ -69,17 +59,5 @@ public class Player {
         } else {
             System.out.println("it appears that this item isn't in your inventory");
         }
-    }
-
-    public Item getWieldingItem(){
-        return wieldingItem;
-    }
-
-    public boolean ownsItem(String itemName){
-        return inventory.ownsItem(itemName);
-    }
-
-    public void takeDamage(double damage){
-        healthBar -= damage;
     }
 }

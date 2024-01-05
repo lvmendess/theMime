@@ -22,6 +22,7 @@ public class Room
     private Map<String, Room> exits = new HashMap<>();
     private HashMap<String, Item> items = new HashMap<>();
     private ArrayList<Character> characters = new ArrayList<>();
+    private boolean hidden;
     private Item openingTool;
 
     /**
@@ -30,10 +31,11 @@ public class Room
      * "an open court yard".
      * @param description The room's description.
      */
-    public Room(String name, String description) 
+    public Room(String name, String description, boolean hidden) 
     {
         this.roomName = name;
         this.description = description;
+        this.hidden = hidden;
     }
 
     public void setOpeningTool(Item tool) { //set tool necessary to open hidden room
@@ -65,7 +67,9 @@ public class Room
     public String getExitString() { //tarefa 4
         String exitStr = "";
         for (String key : exits.keySet()) { //tarefa 6
-            exitStr += " " + key;
+            if (!exits.get(key).hidden) { //checks whether the room is hidden as to not show its entrance to the player
+                exitStr += " " + key;
+            }
         }
         return exitStr;
     }
@@ -80,13 +84,13 @@ public class Room
         return sala;
     }
 
-    /*public ArrayList<String> roomsList(){
+    public ArrayList<String> roomsList(){
         ArrayList<String> exitList = new ArrayList<>();
         for (String key : exits.keySet()) {
             exitList.add(key);
         }
         return exitList;
-    }*/
+    }
 
     /**
      * @return The description of the room.
@@ -146,7 +150,7 @@ public class Room
         characters.remove(character);
     }
     
-    /*public void unlockRoom(Item tool) { //open hidden room
+    public void unlockRoom(Item tool) { //open hidden room
         if (hidden) {
             while (tool.equals(openingTool) == false) {
                 System.out.println("this tool cannot open the room, find something else");
@@ -154,16 +158,6 @@ public class Room
             hidden = false;
             System.out.println(getLongDescription());
         }
-    }*/
-
-    public boolean itemExists(String itemName){
-        boolean exists = false;
-        for(String item : items.keySet()){
-            if(item.equals(itemName)){
-                exists = true;
-            }
-        }
-        return exists;
     }
     
     

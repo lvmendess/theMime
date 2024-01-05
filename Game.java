@@ -36,52 +36,56 @@ public class Game
      */
     private void createRooms()
     {
-        Room initialR1, room11, room12, initialR2, room21, room22, initialR3, room31, room32;  
+        Room outside, room1, room2, room3, room4, room5, hidden1, exposedArea1;
       
         /*1st level */
         // create the rooms
-        initialR1 = new Room("initial1", null);
-        room11 = new Room("room11", null);
-        room12 = new Room("room12", null);
-
-        initialR2 = new Room("initial2", null);
-        room21 = new Room("room11", null);
-        room22 = new Room("room12", null);
-
-        initialR3 = new Room("initial2", null);
-        room31 = new Room("room11", null);
-        room32 = new Room("room12", null);
+        outside = new Room("outside", "outside the south entrance of the pit", false);
+        exposedArea1 = new Room("exposedArea1", "in the first level of the pit", false);
+        room1 = new Room("room1", null,false);
+        room2 = new Room("room2", null, false);
+        hidden1 = new Room("hidden1", null, true);
+        room3 = new Room("room3", null, false);
+        room4 = new Room("room4", null, false);
+        room5 = new Room("room5", null, false);
         // initialise room exits
-        initialR1.setExit("south", room11);
+        outside.setExit("north", exposedArea1); //inhibit go back command
+        exposedArea1.setExit("south", room1); //enter room1
+        room1.setExit("north", exposedArea1); //exit room1
+        exposedArea1.setExit("west", room4); //enter room4
+        room4.setExit("east", exposedArea1);//exit room4
+        room4.setExit("west", room5);//enter room5
+        room5.setExit("east", room4); //exit room5
+        exposedArea1.setExit("east", room2); //enter room2
+        room2.setExit("west", exposedArea1);//exit room2
+        room2.setExit("south", room3);//enter room3
+        room3.setExit("north", room2);//exit room3
+        room2.setExit("east", hidden1); //enter hidden1 ; must find tool to break through wall/hidden door
 
-        room11.setExit("south", room12);
-        room11.setExit("north", initialR1);
-        
-        room12.setExit("south", initialR2);
-        room12.setExit("north", room11);
-        
-        initialR2.setExit("south", room21);
-        
-        room21.setExit("south", room22);
-        room21.setExit("north", initialR2);
-        
-        room22.setExit("north", room21);
-        room22.setExit("south", initialR3);
-        
-        initialR3.setExit("south", room31);
-        
-        room31.setExit("south", room32);
-        room31.setExit("north", initialR3);
-        
-        room32.setExit("north", room31);
 
         //add items
-        
-        
-        //add mime
-        mime = new Mime(room32);
+        Item saw = new Item("saw", "a sharpened hand saw", 1.3, 15);
+        hidden1.setOpeningTool(saw); //tool needed to open the room
+        room5.addItem("saw", saw);
+        /*2nd level */
+        //create rooms
+        //initialize room exits
+        //add items
 
-        currentRoom = initialR1;  // start game outside
+        /*3rd level */
+        //create rooms
+        //initialize room exits
+        //add items
+
+        /*final level */
+        //create rooms
+        //initialize room exits
+        //add items
+
+        //add mime
+        //mime = new Mime(outside);
+
+        currentRoom = outside;  // start game outside
     }
 
     /**
@@ -90,7 +94,7 @@ public class Game
     public void play() 
     {
         player = new Player();
-        player.setCurrentRoom(currentRoom);
+        player.currentLocation = currentRoom;
         printWelcome();
 
         // Enter the main command loop.  Here we repeatedly read commands and
@@ -159,15 +163,11 @@ public class Game
         else if (commandWord.equals("drop")) {
             drop(command);
         }
+        else if (commandWord.equals("use")) {
+            useItem(command);
+        }
         else if (commandWord.equals("wield")) {
             wieldItem(command);
-        }
-        else if(commandWord.equals("attack")){
-            if(mime.getCurrentRoom().equals(currentRoom)){
-                attackMime(command);
-            }else{
-
-            }
         }
         return wantToQuit;
     }
@@ -220,10 +220,8 @@ public class Game
         }
     }
     
-    private void attackMime(Command command) {
-        if(player.getWieldingItem() instanceof Weapon){
-            mime.takeDamage(player.getWieldingItem().getDamage());
-        }
+    private void useItem(Command command) {
+        player.wieldingItem.use();
     }
 
     private void wieldItem(Command command) {
@@ -232,7 +230,7 @@ public class Game
         } else {
             String itemName = command.getSecondWord();
             player.setWieldingItem(itemName);
-            if (player.getWieldingItem().getItemName().equals(itemName)) {
+            if (player.wieldingItem.getItemName().equals(itemName)) {
                 System.out.println("you are currently wielding "+itemName);
             }
         }
@@ -281,14 +279,11 @@ public class Game
             System.out.println("take what?");
         } else {
             String itemName = command.getSecondWord();
-            if(currentRoom.itemExists(itemName)){
-                if(!player.ownsItem(itemName)){
-                    player.addToInventory(itemName, currentRoom.getItem(itemName));
-                    currentRoom.removeItem(itemName);
-                    System.out.println(itemName + " has been added to your inventory");
-                }
-            }else {
-                System.out.println("this item is no longer in this room");
+            if (player.addToInventory(itemName, currentRoom.getItem(itemName))) {
+                currentRoom.removeItem(itemName);
+                System.out.println(itemName + " has been added to your inventory");
+            } else {
+                System.out.println("you can't carry this item now. try dropping something you have");
             }
         }
     }
@@ -298,14 +293,10 @@ public class Game
             System.out.println("drop what?");
         } else {
             String itemName = command.getSecondWord();
-            if(player.ownsItem(itemName)){
-                Item item = player.getItemFromInventory(itemName);
-                player.removeFromInventory(itemName);
-                currentRoom.addItem(itemName, item);
-                System.out.println(itemName + " has been removed to your inventory");
-            }else{
-                System.out.println("this item is no longer in your inventory");
-            }
+            Item item = player.getItemFromInventory(itemName);
+            player.removeFromInventory(itemName);
+            currentRoom.addItem(itemName, item);
+            System.out.println(itemName + " has been removed to your inventory");
         }
     }
 

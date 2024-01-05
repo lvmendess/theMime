@@ -6,8 +6,4 @@ public class Weapon extends Item {
         this.damage = damage;
     }
 
-    public double getDamage(){
-        return damage;
-    }
-
 }

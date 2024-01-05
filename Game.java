@@ -183,7 +183,6 @@ public class Game
                 System.out.println("There is no door!");
             } else {
                 player.move(nextRoom);
-                mime.move();
                 printLocationInfo();
             }
         }

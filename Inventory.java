@@ -1,4 +1,5 @@
 import java.util.*;
+
 public class Inventory {
     private Map<String, Item> inventory = new HashMap<>();
 
@@ -7,7 +8,7 @@ public class Inventory {
     public void printInventory() { //prints inventory
         if (inventory.size() != 0) {
             for (String name : inventory.keySet()) {
-                System.out.println(name +" "+getItem(name).getItemWeight()+"  "+getItem(name).getItemLifespan()); //prints item name and its weight
+                System.out.println(name + " - " + getItem(name).getItemWeight() + "kg - durability: " + getItem(name).getItemLifespan()); //prints item name and its weight
             }
         } else {
             System.out.println("your inventory is empty");

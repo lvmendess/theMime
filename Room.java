@@ -16,9 +16,9 @@ import java.util.*;
  */
 public class Room 
 {
-    public String roomName;
-    public String description;
-    public String longDescription;
+    private String description;
+    private String longDescription;
+    private boolean initialRoom;
     private Map<String, Room> exits = new HashMap<>();
     private HashMap<String, Item> items = new HashMap<>();
     private ArrayList<Character> characters = new ArrayList<>();
@@ -29,14 +29,14 @@ public class Room
      * "an open court yard".
      * @param description The room's description.
      */
-    public Room(String name, String description) 
+    public Room(String description, boolean isInitial) 
     {
-        this.roomName = name;
         this.description = description;
+        initialRoom = isInitial;
     }
 
-    public String getName() {
-        return roomName;
+    public boolean isInitial() {
+        return initialRoom;
     }
 
     /**
@@ -74,14 +74,6 @@ public class Room
         }
         return sala;
     }
-
-    /*public ArrayList<String> roomsList(){
-        ArrayList<String> exitList = new ArrayList<>();
-        for (String key : exits.keySet()) {
-            exitList.add(key);
-        }
-        return exitList;
-    }*/
 
     /**
      * @return The description of the room.

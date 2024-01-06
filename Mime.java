@@ -2,14 +2,14 @@
 public class Mime extends Character {
     
     private Room currentRoom;
-    private int healthBar;
+    private int health;
     private double attack;
 
     public Mime(Room startingRoom){
-        super("the mime is here");
+        super("You see yourself.\nThe mime is here.");
         currentRoom = startingRoom;
         currentRoom.addCharacter(this);
-        healthBar = 1000;
+        health = 1000;
         attack = 70;
     }
 
@@ -17,27 +17,23 @@ public class Mime extends Character {
         return currentRoom;
     }
     
-    public double getMimeHealthBar() {
-        return healthBar;
-    }
-
     public double getAttack() {
         return attack;
     }
 
     public void takeDamage(double damage) {
-        if (healthBar > damage) {
-            healthBar -= damage;
+        if (health > damage) {
+            health -= damage;
         } else {
-            while (healthBar > 0) {
-                healthBar--;
+            while (health > 0) {
+                health--;
                 damage--;
             }
         }
     }
 
-    public double getHealthBar() {
-        return healthBar;
+    public double getHealth() {
+        return health;
     }
 
 }

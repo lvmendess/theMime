@@ -7,21 +7,26 @@ public class Player {
     private double maxWeight;
     private double carryWeight;
     private Item wieldingItem;
-    private double healthBar;
+    private double health;
     
-    public Player() {
+    public Player(Room startingRoom) {
         inventory = new Inventory();
+        setCurrentRoom(startingRoom);
         maxWeight = 25.0; //kilograms
         carryWeight = 0.0;
-        healthBar = 1000;
+        health = 1000;
     }
 
     public void setCurrentRoom(Room room){
         currentLocation = room;
     }
 
+    public Room getCurrentRoom() {
+        return currentLocation;
+    }
+
     public void move(Room room) { //updates player's current location
-        if (currentLocation.getName().contains("initial")) {
+        if (currentLocation.isInitial()) {
             while(roomTracker.size()!=0){
                 roomTracker.pop();
             }
@@ -33,7 +38,7 @@ public class Player {
     public void showInventory() { //shows inventory
         inventory.printInventory();
         if (carryWeight > 0.0) {
-            System.out.println("you are carrying a total of "+carryWeight+" Kg");
+            System.out.println("you are carrying a total of "+carryWeight+" kg");
         }
     }
 
@@ -84,17 +89,17 @@ public class Player {
     }
 
     public void takeDamage(double damage) {
-        if (healthBar > damage) {
-            healthBar -= damage;
+        if (health > damage) {
+            health -= damage;
         } else {
-            while (healthBar > 0) {
-                healthBar--;
+            while (health > 0) {
+                health--;
                 damage--;
             }
         }
     }
     
-    public double getHealthBar() {
-        return healthBar;
+    public double getHealth() {
+        return health;
     }
 }

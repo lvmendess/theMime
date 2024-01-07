@@ -14,12 +14,15 @@
  * @author  Michael Kölling and David J. Barnes
  * @version 2016.02.29
  */
-
+import java.util.*;
 public class Game 
 {
     private Parser parser;
-    private Room currentRoom;
+    private Room startingRoom;
     private Player player;
+    private Mime mime;
+    private Random probability = new Random();
+    private boolean wantToQuit;
         
     /**
      * Create the game and initialise its internal map.
@@ -35,36 +38,30 @@ public class Game
      */
     private void createRooms()
     {
-        Room outside, theater, pub, lab, office;
+        Room room1, room2, room3, room4;  
       
+        /*1st level */
         // create the rooms
-        outside = new Room("outside the main entrance of the university");
-        theater = new Room("in a lecture theater");
-        pub = new Room("in the campus pub");
-        lab = new Room("in a computing lab");
-        office = new Room("in the computing admin office");
-        
+        room1 = new Room("at the lounge", true);
+        room2 = new Room("at the living room", false);
+        room3 = new Room("at the kitchen", false);
+        room4 = new Room("at the bedroom", false);
         // initialise room exits
-        outside.setExit("east", theater);
-        outside.setExit("south", lab);
-        outside.setExit("west", pub);
-
-        theater.setExit("west", outside);
-
-        pub.setExit("east", outside);
-
-        lab.setExit("north", outside);
-        lab.setExit("east", office);
-
-        office.setExit("west", lab);
+        room1.setExit("north", room2);
+        room2.setExit("south", room1);
+        room2.setExit("east", room3);
+        room3.setExit("west", room2);
+        room3.setExit("south", room4);
+        room4.setExit("north", room3);
+        room4.setExit("south", room1);
 
         //add items
+        room1.addItem("shotgun", "lightweight short-range shotgun", 0.632, 100, 150);
+        
+        //add mime
+        mime = new Mime(room4); // creates the mime and adds it to initial room
 
-        office.addItem("phone", "an old rotary dial phone", 1.1);
-        office.addItem("wallet", "a simple wallet, there's 10 dollars in it", 0.05);
-        outside.addItem("bomb", "oppenheinmer's nuke", 4399.846);
-
-        currentRoom = outside;  // start game outside
+        startingRoom = room1;  // start game outside
     }
 
     /**
@@ -72,8 +69,7 @@ public class Game
      */
     public void play() 
     {
-        player = new Player();
-        player.currentLocation = currentRoom;
+        player = new Player(startingRoom);
         printWelcome();
 
         // Enter the main command loop.  Here we repeatedly read commands and
@@ -92,7 +88,7 @@ public class Game
      */
 
     private void printLocationInfo() { //tarefa 2
-        System.out.println(currentRoom.getLongDescription());
+        System.out.println(player.getCurrentRoom().getLongDescription());
         System.out.println();
     }
 
@@ -113,7 +109,7 @@ public class Game
      */
     private boolean processCommand(Command command) 
     {
-        boolean wantToQuit = false;
+        wantToQuit = false;
 
         if(command.isUnknown()) {
             System.out.println("I don't know what you mean...");
@@ -142,7 +138,16 @@ public class Game
         else if (commandWord.equals("drop")) {
             drop(command);
         }
-
+        else if (commandWord.equals("wield")) {
+            wieldItem(command);
+        }
+        else if(commandWord.equals("attack")){
+            if(mime.getCurrentRoom().equals(player.getCurrentRoom())){
+                attack(command);
+            }else{
+                System.out.println("there's nothing to attack here");
+            }
+        }
         return wantToQuit;
     }
 
@@ -168,27 +173,75 @@ public class Game
      */
     private void goRoom(Command command) 
     {
-        if(!command.hasSecondWord()) {
+        if (!command.hasSecondWord()) {
             // if there is no second word, we don't know where to go...
             System.out.println("Go where?");
             return;
         }
-
         String direction = command.getSecondWord();
         // Try to leave current room.
         Room nextRoom = null;
         if (direction.equals("back")) { //tarefa 13
-            nextRoom = player.goBackRoom();
-            currentRoom = nextRoom;
-            printLocationInfo();
+            player.goBackRoom();
         } else {
-            nextRoom = currentRoom.getExit(direction);//tarefa 3
+            nextRoom = player.getCurrentRoom().getExit(direction);//tarefa 3
             if (nextRoom == null) {
                 System.out.println("There is no door!");
-            }else {
-                currentRoom = nextRoom;
-                player.move(currentRoom);
-                printLocationInfo();
+            } else {
+                player.move(nextRoom);
+            }
+        }
+        printLocationInfo();
+    }
+    
+    private void attack(Command command) {
+        if (command.hasSecondWord()) {
+            System.out.println("i know it's to attack the mime, you don't need to tell me");
+            return;
+        }
+        if (player.getWieldingItem() != null) {
+            double prob = Math.abs(probability.nextGaussian())/2;
+            System.out.println(prob);
+            if (prob > 0.1) {
+                System.out.println("You attacked the mime.");
+                mime.takeDamage(player.getWieldingItem().getDamage());
+                if (mime.getHealth() == 0) {
+                    playerWon();
+                }
+            } else {
+                System.out.println("You missed.");
+            }
+            // o que esse try catch faz? - paulo
+            try {
+                Thread.sleep(500); 
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if (mime.getHealth() > 0) {
+                prob = Math.abs(probability.nextGaussian());
+                if (prob > 0.7) {
+                    System.out.println("The mime attacked you.");
+                    player.takeDamage(mime.getAttack());
+                    if (player.getHealth() == 0) {
+                        playerDied();
+                    }
+                }
+            }
+            System.out.println(allHealthStatus());
+        } else {
+            System.out.println("You can't attack without wielding anything.");
+        }
+    }
+
+    private void wieldItem(Command command) {
+        if (!command.hasSecondWord()) {
+            System.out.println("wield what?");
+        } else {
+            String itemName = command.getSecondWord();
+            player.setWieldingItem(itemName);
+            if (player.getWieldingItem().getItemName().equals(itemName)) {
+                System.out.println("you are currently wielding "+itemName);
             }
         }
     }
@@ -198,6 +251,7 @@ public class Game
      * whether we really quit the game.
      * @return true, if this command quits the game, false otherwise.
      */
+    
     private boolean quit(Command command) 
     {
         if (command.hasSecondWord()) {
@@ -215,7 +269,7 @@ public class Game
         if (command.hasSecondWord()) {
             System.out.println("look what?");
         } else {
-            System.out.println(currentRoom.getLongDescription());
+            System.out.println(player.getCurrentRoom().getLongDescription());
         }
     }
 
@@ -235,11 +289,15 @@ public class Game
             System.out.println("take what?");
         } else {
             String itemName = command.getSecondWord();
-            if (player.addToInventory(itemName, currentRoom.getItem(itemName))) {
-                currentRoom.removeItem(itemName);
-                System.out.println(itemName + " has been added to your inventory");
+            if (player.getCurrentRoom().itemExists(itemName)) {
+                if (!player.ownsItem(itemName)) {
+                    player.addToInventory(itemName, player.getCurrentRoom().getItem(itemName));
+                    player.setWieldingItem(itemName);
+                    player.getCurrentRoom().removeItem(itemName);
+                    System.out.println(itemName + " has been added to your inventory");
+                }
             } else {
-                System.out.println("you can't carry this item now. try dropping something you have");
+                System.out.println("this item is not in this room");
             }
         }
     }
@@ -249,11 +307,42 @@ public class Game
             System.out.println("drop what?");
         } else {
             String itemName = command.getSecondWord();
-            Item item = player.getItemFromInventory(itemName);
-            player.removeFromInventory(itemName);
-            currentRoom.addItem(itemName, item);
-            System.out.println(itemName + " has been removed to your inventory");
+            if (player.ownsItem(itemName)) {
+                Item item = player.getItemFromInventory(itemName);
+                player.removeFromInventory(itemName);
+                player.getCurrentRoom().addItem(itemName, item);
+                System.out.println(itemName + " has been removed to your inventory");
+            } else {
+                System.out.println("this item is no longer in your inventory");
+            }
         }
+    }
+
+    private String healthBar(double health) {
+        String healthBar = "[";
+        for (int i = 0; i <= 1000; i += 100) {
+            if (health > i) {
+                healthBar += "#";
+            } else {
+                healthBar += " ";
+            }
+        }
+        healthBar += "]";
+        return healthBar;
+    }
+
+    private String allHealthStatus() {
+        return "Your health: " + healthBar(player.getHealth()) + "\n" + "Mime's health: " + healthBar(mime.getHealth()) + "\n";
+    }
+    
+    private void playerDied() {
+        System.out.println("you died");
+        wantToQuit = true;
+    }
+    
+    private void playerWon() {
+        System.out.println("you've sucessfully defeated the mime");
+        wantToQuit = true;
     }
 
 }

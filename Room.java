@@ -16,10 +16,12 @@ import java.util.*;
  */
 public class Room 
 {
-    public String description;
-    public String longDescription;
+    private String description;
+    private String longDescription;
+    private boolean initialRoom;
     private Map<String, Room> exits = new HashMap<>();
     private HashMap<String, Item> items = new HashMap<>();
+    private ArrayList<Character> characters = new ArrayList<>();
 
     /**
      * Create a room described "description". Initially, it has
@@ -27,9 +29,14 @@ public class Room
      * "an open court yard".
      * @param description The room's description.
      */
-    public Room(String description) 
+    public Room(String description, boolean isInitial) 
     {
         this.description = description;
+        initialRoom = isInitial;
+    }
+
+    public boolean isInitial() {
+        return initialRoom;
     }
 
     /**
@@ -53,7 +60,7 @@ public class Room
     public String getExitString() { //tarefa 4
         String exitStr = "";
         for (String key : exits.keySet()) { //tarefa 6
-            exitStr += " "+key;
+            exitStr += " " + key;
         }
         return exitStr;
     }
@@ -90,17 +97,28 @@ public class Room
         }
         longDescription += "\n" + "Exits:" + getExitString();
 
+        if (characters.size() > 0) {
+            for (Character character : characters) {
+                longDescription += "\n"+character.getDescription();
+            }
+        }
+
         return longDescription;
     }
     
-    public void addItem(String name, String description, double weight) {
-        Item item = new Item(name, description, weight);
+    public void addItem(String name, String description, double weight, int lifespan, double damage) {
+        Item item = new Item(name, description, weight, lifespan, damage);
         items.put(name, item);
     }
 
     public void addItem(String name, Item item) {
         items.put(name, item);
     }
+
+    /*public void addWeapon(String name, String description, double weight, double damage, int lifespan, String type) {
+        Weapon weapon = new Weapon(name, description, weight, damage, lifespan, type);
+        items.put(name, weapon);
+    }*/
 
     public Item getItem(String itemName) {
         return items.get(itemName);
@@ -110,6 +128,34 @@ public class Room
         if (items.containsKey(itemName)) {
             items.remove(itemName);
         }
+    }
+
+    public void addCharacter(Character character) {
+        characters.add(character);
+    }
+
+    public void removeCharacter(Character character) {
+        characters.remove(character);
+    }
+    
+    /*public void unlockRoom(Item tool) { //open hidden room
+        if (hidden) {
+            while (tool.equals(openingTool) == false) {
+                System.out.println("this tool cannot open the room, find something else");
+            }
+            hidden = false;
+            System.out.println(getLongDescription());
+        }
+    }*/
+
+    public boolean itemExists(String itemName){
+        boolean exists = false;
+        for(String item : items.keySet()){
+            if(item.equals(itemName)){
+                exists = true;
+            }
+        }
+        return exists;
     }
     
     

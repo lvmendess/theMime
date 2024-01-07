@@ -1,14 +1,14 @@
 import java.util.*;
+
 public class Inventory {
     private Map<String, Item> inventory = new HashMap<>();
 
-    public Inventory() {
-    };
+    public Inventory(){};
 
     public void printInventory() { //prints inventory
         if (inventory.size() != 0) {
             for (String name : inventory.keySet()) {
-                System.out.println(name +" "+getItem(name).getItemWeight()); //prints item name and its weight
+                System.out.println(name + " - " + getItem(name).getItemWeight() + "kg - durability: " + getItem(name).getItemLifespan()); //prints item name and its weight
             }
         } else {
             System.out.println("your inventory is empty");
@@ -26,4 +26,15 @@ public class Inventory {
     public Item getItem(String itemName) {
         return inventory.get(itemName);
     }
+
+    public boolean ownsItem(String itemName) {
+        boolean owns = false;
+        for (String name : inventory.keySet()) {
+            if (name.equals(itemName)) {
+                owns = true;
+            }
+        }
+        return owns;
+    }
+
 }

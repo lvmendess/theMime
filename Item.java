@@ -1,25 +1,40 @@
 public class Item {
-    private String name;
-    private String description;
-    private double weight;
-    //private boolean taken;
+    protected double weight;
+    protected String name;
+    protected String description;
+    protected int lifespan; //how much damage it can take
+    protected double damage;
 
-    public Item(String itemName, String itemDescription, double itemWeight) {
+    public Item(String itemName, String itemDescription, double itemWeight, int lifespan, double damage) {
         name = itemName;
         description = itemDescription;
         weight = itemWeight;
-        //taken = false;
+        this.lifespan = lifespan;
+        this.damage = damage;
     }
 
     public String getItemName() {
         return name;
     }
 
-    public double getItemWeight() {
-        return weight;
+    public double getDamage() {
+        return damage;
     }
 
     public String getDescription() {
         return description;
     }
+
+    public double getItemWeight() {
+        return weight;
+    }
+
+    public int getItemLifespan() {
+        return lifespan;
+    }
+
+    public void takeDamage(double damage) {
+        lifespan -= damage;
+    }
+
 }

@@ -14,6 +14,7 @@
  * @author  Michael Kölling and David J. Barnes
  * @version 2016.02.29
  */
+import java.io.PrintWriter;
 import java.util.*;
 public class Game 
 {
@@ -56,7 +57,7 @@ public class Game
         room4.setExit("south", room1);
 
         //add items
-        room1.addItem("shotgun", "lightweight short-range shotgun", 0.632, 100, 150);
+        room1.addItem("shotgun", "a lightweight short-range shotgun", 0.632, 100, 150);
         
         //add mime
         mime = new Mime(room4); // creates the mime and adds it to initial room
@@ -141,10 +142,10 @@ public class Game
         else if (commandWord.equals("wield")) {
             wieldItem(command);
         }
-        else if(commandWord.equals("attack")){
-            if(mime.getCurrentRoom().equals(player.getCurrentRoom())){
+        else if (commandWord.equals("attack")) {
+            if (mime.getCurrentRoom().equals(player.getCurrentRoom())) {
                 attack(command);
-            }else{
+            } else {
                 System.out.println("there's nothing to attack here");
             }
         }
@@ -166,7 +167,6 @@ public class Game
         System.out.println("Your command words are:");
         parser.showCommands();
     }
-
     /** 
      * Try to go in one direction. If there is an exit, enter
      * the new room, otherwise print an error message.
@@ -182,13 +182,30 @@ public class Game
         // Try to leave current room.
         Room nextRoom = null;
         if (direction.equals("back")) { //tarefa 13
-            player.goBackRoom();
+            if (player.getCurrentRoom().isInitial()) {
+                System.out.println("You can't go back from here");
+            } else {
+                player.goBackRoom();
+            }
         } else {
             nextRoom = player.getCurrentRoom().getExit(direction);//tarefa 3
             if (nextRoom == null) {
                 System.out.println("There is no door!");
             } else {
+                /*if (mime.getCurrentRoom().equals(player.getCurrentRoom())) {
+                    mime.setNextDirection(direction); //mime will get the same exit the player got
+                }*/
                 player.move(nextRoom);
+
+                /*try {
+                    Thread.sleep(3000); //tempo que o mime "espera" antes de perseguir o player
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
+                //mime.huntPlayer();
+                if (player.getCurrentRoom().isInitial()) {
+                    System.out.println("You hear the door lock itself behind you. You can't go back from here");
+                }
             }
         }
         printLocationInfo();
@@ -197,38 +214,45 @@ public class Game
     private void attack(Command command) {
         if (command.hasSecondWord()) {
             System.out.println("i know it's to attack the mime, you don't need to tell me");
-            return;
         }
         if (player.getWieldingItem() != null) {
             double prob = Math.abs(probability.nextGaussian())/2;
-            System.out.println(prob);
-            if (prob > 0.1) {
-                System.out.println("You attacked the mime.");
-                mime.takeDamage(player.getWieldingItem().getDamage());
-                if (mime.getHealth() == 0) {
-                    playerWon();
+            if (prob > mime.getDefense()) {
+                if (player.getAttackStreak() > 2 && player.getAttackStreak() <= 3) {
+                    mime.takeDamage(player.getWieldingItem().getDamage()*player.getAttackStreak());
+                } else {
+                    mime.takeDamage(player.getWieldingItem().getDamage());
                 }
+                player.addAttackStreak();// adds 1 to the attackStreak every time the player successfully attacks the mime
+                System.out.println("You attacked the mime.");
             } else {
                 System.out.println("You missed.");
+                player.resetAttackStreak();
             }
-            // o que esse try catch faz? - paulo
             try {
-                Thread.sleep(500); 
+                Thread.sleep(500); //tempo que o mime "espera" antes de atacar o player
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
             if (mime.getHealth() > 0) {
                 prob = Math.abs(probability.nextGaussian());
-                if (prob > 0.7) {
+                if (prob > player.getDefense()) {
+                    mime.addAttackStreak(); //adds 1 to the mime's attack streak every time it successfully attacks the player
                     System.out.println("The mime attacked you.");
                     player.takeDamage(mime.getAttack());
-                    if (player.getHealth() == 0) {
-                        playerDied();
-                    }
+                } else {
+                    System.out.println("the mime tried to attack you, but missed");
+                    mime.resetAttackStreak();
                 }
             }
             System.out.println(allHealthStatus());
+            if (mime.getHealth() == 0) {
+                playerWon();
+            }
+            if (player.getHealth() == 0) {
+                playerDied();
+            }
         } else {
             System.out.println("You can't attack without wielding anything.");
         }
@@ -322,7 +346,7 @@ public class Game
         String healthBar = "[";
         for (int i = 0; i <= 1000; i += 100) {
             if (health > i) {
-                healthBar += "#";
+                healthBar += /*"#"*/ '\u25A0';//troquei o # por um ■ pra ficar mais bonitinho - livia
             } else {
                 healthBar += " ";
             }
@@ -332,7 +356,7 @@ public class Game
     }
 
     private String allHealthStatus() {
-        return "Your health: " + healthBar(player.getHealth()) + "\n" + "Mime's health: " + healthBar(mime.getHealth()) + "\n";
+        return "Your health:   " + healthBar(player.getHealth()) + "\n" + "Mime's health: " + healthBar(mime.getHealth()) + "\n";
     }
     
     private void playerDied() {

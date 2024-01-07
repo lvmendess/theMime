@@ -67,12 +67,20 @@ public class Room
 
     public Room getExit(String direction) { //tarefa 3
         Room sala = null;
-        for (String key : exits.keySet()) { 
+        for (String key : exits.keySet()) {
             if (key.equals(direction)) {
                 sala = exits.get(direction);
             }
         }
         return sala;
+    }
+    
+    public ArrayList<String> roomsList(){
+        ArrayList<String> exitList = new ArrayList<>();
+        for (String key : exits.keySet()) {
+            exitList.add(key);
+        }
+        return exitList;
     }
 
     /**
@@ -115,10 +123,6 @@ public class Room
         items.put(name, item);
     }
 
-    /*public void addWeapon(String name, String description, double weight, double damage, int lifespan, String type) {
-        Weapon weapon = new Weapon(name, description, weight, damage, lifespan, type);
-        items.put(name, weapon);
-    }*/
 
     public Item getItem(String itemName) {
         return items.get(itemName);

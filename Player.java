@@ -8,6 +8,8 @@ public class Player {
     private double carryWeight;
     private Item wieldingItem;
     private double health;
+    private int attackStreak = 0;
+    private double defense;
     
     public Player(Room startingRoom) {
         inventory = new Inventory();
@@ -15,6 +17,7 @@ public class Player {
         maxWeight = 25.0; //kilograms
         carryWeight = 0.0;
         health = 1000;
+        defense = 0.9;
     }
 
     public void setCurrentRoom(Room room){
@@ -27,7 +30,7 @@ public class Player {
 
     public void move(Room room) { //updates player's current location
         if (currentLocation.isInitial()) {
-            while(roomTracker.size()!=0){
+            while(roomTracker.size()>0){
                 roomTracker.pop();
             }
         }
@@ -64,7 +67,7 @@ public class Player {
     }
 
     public Room goBackRoom() { //tarefa 13
-        if (roomTracker.size() < 1) {
+        if (roomTracker.size() == 0) {
             return currentLocation;
         } else {
             return currentLocation = roomTracker.pop();
@@ -101,5 +104,24 @@ public class Player {
     
     public double getHealth() {
         return health;
+    }
+
+    public int getAttackStreak() {
+        return attackStreak;
+    }
+
+    public void addAttackStreak() {
+        attackStreak++;
+    }
+
+    public void resetAttackStreak() {
+        attackStreak = 0;
+    }
+
+    public double getDefense() {
+        int x = 1000;
+        double y = x - health;
+        defense -= y / 1000;
+        return defense;
     }
 }

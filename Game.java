@@ -57,7 +57,8 @@ public class Game
         room4.setExit("south", room1);
 
         //add items
-        room1.addItem("shotgun", "a lightweight short-range shotgun", 0.632, 100, 150);
+        room1.addItem("shotgun", "a lightweight short-range shotgun", 0.632, 100, 50.0, 1);
+
         
         //add mime
         mime = new Mime(room4); // creates the mime and adds it to initial room
@@ -148,6 +149,8 @@ public class Game
             } else {
                 System.out.println("there's nothing to attack here");
             }
+        }else if(commandWord.equals("use")){
+            use(command);
         }
         return wantToQuit;
     }
@@ -192,17 +195,11 @@ public class Game
             if (nextRoom == null) {
                 System.out.println("There is no door!");
             } else {
-                /*if (mime.getCurrentRoom().equals(player.getCurrentRoom())) {
-                    mime.setNextDirection(direction); //mime will get the same exit the player got
-                }*/
+                if(mime.getCurrentRoom().equals(player.getCurrentRoom())){
+                    mime.metPlayer();
+                }
                 player.move(nextRoom);
-
-                /*try {
-                    Thread.sleep(3000); //tempo que o mime "espera" antes de perseguir o player
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
-                //mime.huntPlayer();
+                mime.move();
                 if (player.getCurrentRoom().isInitial()) {
                     System.out.println("You hear the door lock itself behind you. You can't go back from here");
                 }
@@ -255,6 +252,17 @@ public class Game
             }
         } else {
             System.out.println("You can't attack without wielding anything.");
+        }
+    }
+
+    private void use(Command command){
+        if (!command.hasSecondWord()) {
+            System.out.println("use what?");
+        } else {
+            String itemName = command.getSecondWord();
+            if(player.ownsItem(itemName)){
+                getBehavior(player.getItem(itemName).getItemCode());
+            }
         }
     }
 
@@ -332,7 +340,7 @@ public class Game
         } else {
             String itemName = command.getSecondWord();
             if (player.ownsItem(itemName)) {
-                Item item = player.getItemFromInventory(itemName);
+                Item item = player.getItem(itemName);
                 player.removeFromInventory(itemName);
                 player.getCurrentRoom().addItem(itemName, item);
                 System.out.println(itemName + " has been removed to your inventory");
@@ -367,6 +375,38 @@ public class Game
     private void playerWon() {
         System.out.println("you've sucessfully defeated the mime");
         wantToQuit = true;
+    }
+
+    public void getBehavior(int itemCode){
+        switch(itemCode){
+            case 1: //armas
+                player.getWieldingItem().changeLifespan(-1);
+                break;
+            case 2: //munição
+                player.getWieldingItem().changeLifespan(6);
+                break;
+            case 3: //granada
+                System.out.println("you're a dummy and you exploded yourself. congratulations!");
+                playerDied();
+                break;
+            case 4: //lanterna
+
+                break;
+            case 5:
+
+                break;
+            case 6:
+
+                break;
+
+            case 7:
+
+                break;
+
+            case 8:
+
+                break;
+        }
     }
 
 }

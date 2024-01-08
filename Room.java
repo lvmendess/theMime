@@ -33,12 +33,12 @@ public class Room
     {
         this.description = description;
         initialRoom = isInitial;
+
     }
 
     public boolean isInitial() {
         return initialRoom;
     }
-
     /**
      * Define the exits of this room.  Every direction either leads
      * to another room or is null (no exit there).
@@ -114,8 +114,8 @@ public class Room
         return longDescription;
     }
     
-    public void addItem(String name, String description, double weight, int lifespan, double damage) {
-        Item item = new Item(name, description, weight, lifespan, damage);
+    public void addItem(String name, String description, double weight, int lifespan, double damage, int code) {
+        Item item = new Item(name, description, weight, lifespan, damage, code);
         items.put(name, item);
     }
 

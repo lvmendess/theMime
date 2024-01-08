@@ -62,7 +62,7 @@ public class Player {
         inventory.removeItem(name);
     }
 
-    public Item getItemFromInventory(String name) {
+    public Item getItem(String name) {
         return inventory.getItem(name);
     }
 

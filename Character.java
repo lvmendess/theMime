@@ -8,8 +8,4 @@ public class Character {
     public String getDescription() {
         return description;
     }
-
-    public void changeDescription(String newDescription){
-        description = newDescription;
-    }
 }

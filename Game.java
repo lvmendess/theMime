@@ -4,7 +4,7 @@
  *  executes the commands that the parser returns.
  * 
  * @author Lívia Mendes e Paulo Moura
- * @version 2024.01.08
+ * @version 2024.01.09
  */
 import java.util.*;
 public class Game 
@@ -16,37 +16,34 @@ public class Game
     private Random probability = new Random();
     private boolean wantToQuit;
     private ArrayList<Room> rooms = new ArrayList<>();
-    private ArrayList<Ending> endings = new ArrayList<>();
+    private ArrayList<String> endings = new ArrayList<>();
     private int endingIndex;
     private String gameEnding;
-        
-    /**
-     * Create the game and initialise its internal map.
-     */
-    public Game() 
-    {
-        createRooms();
-        createEndings();
-        parser = new Parser();
-        endingIndex = probability.nextInt(0, endings.size()); //not working, needs to be fixed
-        gameEnding = endings.get(endingIndex).getEnding(endingIndex);
-    }
 
     /*
      * Create game endings
      */
     private void createEndings() {
-        Ending end1, end2, end3;
+        String end1, end2, end3;
 
-        end1 = new Ending("you wake up in your bed, it was all a dream");
-        end2 = new Ending(
-                "you wake up in your bed, it was all a nightmare \n until you look into the mirror and you don't see yourself \n you see the mime");
-        end3 = new Ending(
-                "you see the mime sitting in a cute chair while drinking a little tea \n and it kindly offers you some");
+        end1 = "you wake up in your bed, it was all a dream";
+        end2 = "you wake up in your bed, it was all a nightmare \n until you look into the mirror and you don't see yourself \n you see the mime";
+        end3 = "you see the mime sitting in a cute chair while drinking a little tea \n and it kindly offers you some";
 
         endings.add(end1);
         endings.add(end2);
         endings.add(end3);
+    }
+    /**
+     * Create the game and initialise its internal map.
+     */
+    public Game() 
+    {
+        createEndings();
+        createRooms();
+        parser = new Parser();
+        endingIndex = probability.nextInt(0, endings.size()); //not working, needs to be fixed
+        gameEnding = endings.get(endingIndex);
     }
 
     /**
@@ -57,10 +54,14 @@ public class Game
         Room room1, room2, room3, room4, endRoom;
       
         // create the rooms
-        room1 = new Room("at the lounge", true, false, false);
-        room2 = new Room("at the living room", false, false,false);
-        room3 = new Room("at the kitchen", false, false, false);
-        room4 = new Room("at the bedroom", false, false, false);
+        room1 = new Room("at what seems to be a lounge. Everything looks dirty and worn over time, and the atmosphere is laden with the foul stench of mold and rot. \n The frames on the wall show people with bizarrely distroted faces. \n You walk in carpet and see a couch of crumbling and wormy food next to a rusty metal table", true, false, false);
+
+        room2 = new Room("at a dining room. \n The only source of light is a dim chandelier that hangs above a long wooden table. \n The table is covered by a dirty cloth and some rotten food. \n The chairs look old, some of them knocked over or broken. \n There is an old hanged clock that spins inconsistently, making it hard to tell the time", false, false,false);
+
+        room3 = new Room("at a kitchen. you can hear water dripping from the sink and the floor creaking as you move. \n The cabinets are falling apart but, above them, you notice cutlery hanging on the wall", false, false, false);
+
+        room4 = new Room("at a bedroom. The place looks dark and somber, illuminated by a single flickering light bulb. \n The bed is torn and stained, and the sheets are soaked in a gross fluid you can't tell apart. \n The floor is littered with trash, but some things in it catch your attention", false, false, false);
+
         endRoom = new Room(gameEnding, false, true, true);
 
         rooms.add(room1);
@@ -294,6 +295,7 @@ public class Game
                 }
                 System.out.println(allHealthStatus());
                 if (mime.getHealth() == 0) {
+                    mime.changeDescription("the mime lies on the floor in front of you, dead");
                     playerWon();
                 }
                 if (player.getHealth() == 0) {

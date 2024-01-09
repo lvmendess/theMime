@@ -124,4 +124,6 @@ public class Player {
         defense -= y / 1000;
         return defense;
     }
+
+    
 }

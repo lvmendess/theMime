@@ -1,7 +1,9 @@
 /**
- *  This main class creates and initialises all the others: it creates all
- *  rooms, creates the parser and starts the game.  It also evaluates and
+ *  This class creates and initialises all the others: it creates all
+ *  rooms, creates the parser and starts the game. It also evaluates and
  *  executes the commands that the parser returns.
+ *  It is also responsible for managing all of the game and mediating
+ *  interactions between classes without breaking encapsulation.
  * 
  * @author Lívia Mendes e Paulo Moura
  * @version 2024.01.08
@@ -83,11 +85,13 @@ public class Game
 
 
         //add items
-        room1.addItem("shotgun", "a lightweight short-range shotgun", 0.632, 6, 100.0, 1);
-        room1.addItem("grenade", "a grenade", 0.210, 1, 100000, 3);
-        room1.addItem("knife", "a tactical knife", 0.04, 1000, 25, 1);
-        room1.addItem("ammunition", "a six bullet ammunition clip, use wisely", 0.5, 6, 0, 2);
-        room1.addItem("mirror", "a oval shaped mirror, you can use it to confuse the mime", 0.1, 3, 500, 4);
+        room1.addItem("shotgun", "a lightweight short-range shotgun", 3.5, 6, 100.0, 1);
+        room2.addItem("ammunition", "a six bullet ammunition clip.", 0.5, 6, 0, 2);
+        room2.addItem("flashlight", "a simple flashlight. it seems to be working.", 0.2, 10, 50, 4);
+        room3.addItem("knife", "a kitchen knife", 0.2, 1000, 35, 1);
+        room3.addItem("backpack", "an old, empty backpack.", 0.0, 1, 0, 6);
+        room4.addItem("grenade", "a grenade", 0.210, 1, 100000, 3);
+        room4.addItem("mirror", "a oval shaped hand mirror.", 0.1, 3, 200, 4);
 
 
         //add mime
@@ -264,13 +268,17 @@ public class Game
                 getBehavior(1);
                 double prob = Math.abs(probability.nextGaussian()) / 2;
                 if (prob > mime.getDefense()) {
-                    if (player.getAttackStreak() > 2 && player.getAttackStreak() <= 3) {
-                        mime.takeDamage(player.getWieldingItem().getDamage() * player.getAttackStreak());
+                    if (player.getWieldingItem().getItemLifespan() > 0) {
+                        if (player.getAttackStreak() > 2 && player.getAttackStreak() <= 3) {
+                            mime.takeDamage(player.getWieldingItem().getDamage() * player.getAttackStreak());
+                        } else {
+                            mime.takeDamage(player.getWieldingItem().getDamage());
+                        }
+                        player.addAttackStreak();// adds 1 to the attackStreak every time the player successfully attacks the mime
+                        System.out.println("You attacked the mime.");
                     } else {
-                        mime.takeDamage(player.getWieldingItem().getDamage());
+                        System.out.println("You ran out of ammo.");
                     }
-                    player.addAttackStreak();// adds 1 to the attackStreak every time the player successfully attacks the mime
-                    System.out.println("You attacked the mime.");
                 } else {
                     System.out.println("You missed.");
                     player.resetAttackStreak();
@@ -322,8 +330,10 @@ public class Game
                     System.out.println("type attack to use a firearm or a knife, but you need to wield it first");  
                 }
                 
+            } else {
+                System.out.println("You don't have this item.");
             }
-        }
+        } 
     }
 
     /*
@@ -334,10 +344,18 @@ public class Game
             System.out.println("wield what?");
         } else {
             String itemName = command.getSecondWord();
-            player.setWieldingItem(itemName);
-            if (player.getWieldingItem().getItemName().equals(itemName)) {
-                System.out.println("you are currently wielding "+itemName);
+            try {
+                player.setWieldingItem(itemName);
+                if (player.getWieldingItem().getItemName().equals(itemName)) {
+                    System.out.println("you are currently wielding "+itemName);
+                } else {
+                    System.out.println("It seems that this item is not in the room.");
+                }
+            } catch (Exception e) {
+                System.out.println("This item isn't in your inventory.");
+                System.out.println(player.getWieldingItem());
             }
+
         }
     }
 
@@ -392,7 +410,10 @@ public class Game
             if (player.getCurrentRoom().itemExists(itemName)) {
                 if (!player.ownsItem(itemName)) {
                     player.addToInventory(itemName, player.getCurrentRoom().getItem(itemName));
-                    player.setWieldingItem(itemName);
+                    if (player.getItem(itemName).getItemCode() == 1) {
+                        player.setWieldingItem(itemName);
+                        System.out.println("You wield the " + itemName + ".");
+                    }
                     player.getCurrentRoom().removeItem(itemName);
                     System.out.println(itemName + " has been added to your inventory");
                 }
@@ -461,7 +482,7 @@ public class Game
      * which results in one of the endings created in createEndings()
      */
     private void playerWon() {
-        System.out.println("you've sucessfully defeated the mime and it may have dropped something for you, take a look");
+        System.out.println("you've sucessfully defeated the mime and it has left something, take a look");
         Item key = new Item("key", "a golden key appeared on the floor, you can use it to unlock a certain door", 0.05, 1, 0, 5);
         player.getCurrentRoom().addItem("key", key);
     }
@@ -484,6 +505,8 @@ public class Game
                         player.removeFromInventory("ammunition");
                         System.out.println("your "+player.getWieldingItem().getItemName()+" has been reloaded");
                     }
+                } else {
+                    System.out.println("You are not wielding a firearm.");
                 }
                 break;
             case 3: //grenade
@@ -499,16 +522,18 @@ public class Game
                 if (player.getWieldingItem().getItemCode() == itemCode) {
                     if (player.getCurrentRoom().equals(mime.getCurrentRoom())) {
                         double x = player.getWieldingItem().getDamage() / 1000;
+                        System.out.println(x); // debug, remover
                         player.getWieldingItem().changeLifespan(-1);
                         mime.setDefense(-x);
-                        System.out.println("it looks like the mime got dizzy, attacking it might be easier now");
+                        System.out.println("it looks like the mime got dizzy, it's visibly weaker.");
+                        System.out.println(mime.getDefense()); // debug, remover
                         if (player.getWieldingItem().getItemLifespan() == 0) {
                             player.removeFromInventory(player.getWieldingItem().getItemName());
                             System.out.println(player.getWieldingItem().getItemName() + " broke");
                             player.setWieldingItem(null);
                         }
                     } else {
-                        System.out.println("chill out, the mime isn't here right now");
+                        System.out.println("You use the " + player.getWieldingItem().getItemName() + ", and it doesn't do much.");
                     }
                 } else {
                     System.out.println("you need to wield this item to use it");
@@ -525,6 +550,11 @@ public class Game
                 } else {
                     System.out.println("you need to wield this item to use it");
                 }
+                break;
+            case 6: //backpack
+                System.out.println("You are now using a backpack. You can carry more items.");
+                player.changeMaxWeight(10);
+                player.removeFromInventory("backpack");
                 break;
             default:
                 attack(null);

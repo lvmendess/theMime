@@ -14,7 +14,7 @@ public class Player {
     public Player(Room startingRoom) {
         inventory = new Inventory();
         setCurrentRoom(startingRoom);
-        maxWeight = 25.0; //kilograms
+        maxWeight = 15.0; //kilograms
         carryWeight = 0.0;
         health = 1000;
         defense = 0.9;
@@ -77,8 +77,6 @@ public class Player {
     public void setWieldingItem(String itemName) {
         if (inventory.ownsItem(itemName)) {
              wieldingItem = inventory.getItem(itemName);
-        } else {
-            System.out.println("it appears that this item isn't in your inventory");
         }
         
     }
@@ -123,5 +121,9 @@ public class Player {
         double y = x - health;
         defense -= y / 1000;
         return defense;
+    }
+
+    public void changeMaxWeight(int kg) {
+        maxWeight += kg;
     }
 }

@@ -26,8 +26,8 @@ public class Game
      */
     public Game() 
     {
-        createRooms();
         createEndings();
+        createRooms();
         parser = new Parser();
     }
 
@@ -99,7 +99,7 @@ public class Game
         room3.addItem("knife", "a kitchen knife", 0.2, 1000, 35, 1);
         room3.addItem("backpack", "an old, empty backpack.", 0.0, 1, 0, 6);
         room4.addItem("grenade", "a grenade", 0.210, 1, 100000, 3);
-        room4.addItem("mirror", "a oval shaped hand mirror.", 0.1, 3, 200, 4);
+        room4.addItem("mirror", "a oval shaped hand mirror.", 0.1, 3, 100, 4);
 
 
         //add mime

@@ -1,3 +1,9 @@
+/*
+ *  Character class. Used to create characters and add them to rooms.
+ * 
+ *  @author Lívia Mendes & Paulo Moura
+ */
+
 public class Character {
     private String description;
 

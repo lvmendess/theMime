@@ -1,3 +1,11 @@
+/*
+ *  Item class. It creates an item and it's propreties.
+ *  Also returns some informations about the item itself.
+ * 
+ *  @author Lívia Mendes & Paulo Moura
+ */
+
+
 public class Item {
     private double weight;
     private String name;

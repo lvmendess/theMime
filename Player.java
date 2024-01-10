@@ -1,3 +1,11 @@
+/*
+ *  Player class. Controls everything the player can do and store it's in-game
+ *  proprieties, such as maximum weight and life. Tracks and manages player's
+ *  current room.
+ * 
+ *  @author Lívia Mendes e Paulo Moura
+ */
+
 import java.util.*;
 
 public class Player {
@@ -14,7 +22,7 @@ public class Player {
     public Player(Room startingRoom) {
         inventory = new Inventory();
         setCurrentRoom(startingRoom);
-        maxWeight = 25.0; //kilograms
+        maxWeight = 15.0; //kilograms
         carryWeight = 0.0;
         health = 1000;
         defense = 0.9;
@@ -77,8 +85,6 @@ public class Player {
     public void setWieldingItem(String itemName) {
         if (inventory.ownsItem(itemName)) {
              wieldingItem = inventory.getItem(itemName);
-        } else {
-            System.out.println("it appears that this item isn't in your inventory");
         }
         
     }
@@ -125,5 +131,7 @@ public class Player {
         return defense;
     }
 
-    
+    public void changeMaxWeight(int kg) {
+        maxWeight += kg;
+    }
 }

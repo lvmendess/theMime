@@ -1,3 +1,11 @@
+/*
+ *  Mime class. Mime is a Character, but have it's many special proprieties
+ *  and behaviors. Movement and attacks are answers to player's actions.
+ * 
+ *  @author Lívia Mendes e Paulo Moura
+ */
+
+
 import java.util.*;
 public class Mime extends Character {
     

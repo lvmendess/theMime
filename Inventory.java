@@ -1,3 +1,10 @@
+/*
+ *  Inventory class. It creates and manages a HashMap for player to store their items.
+ *  Also returns some informations about the inventory's state.
+ * 
+ *  @author Lívia Mendes & Paulo Moura
+ */
+
 import java.util.*;
 
 public class Inventory {

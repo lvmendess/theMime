@@ -1,3 +1,11 @@
+/*
+ *  Player class. Controls everything the player can do and store it's in-game
+ *  proprieties, such as maximum weight and life. Tracks and manages player's
+ *  current room.
+ * 
+ *  @author Lívia Mendes e Paulo Moura
+ */
+
 import java.util.*;
 
 public class Player {

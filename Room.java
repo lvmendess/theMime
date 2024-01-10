@@ -3,16 +3,14 @@ import java.util.*;
 /**
  * Class Room - a room in an adventure game.
  *
- * This class is part of the "World of Zuul" application. 
- * "World of Zuul" is a very simple, text based adventure game.  
- *
  * A "Room" represents one location in the scenery of the game.  It is 
- * connected to other rooms via exits.  The exits are labelled north, 
- * east, south, west.  For each direction, the room stores a reference
- * to the neighboring room, or null if there is no exit in that direction.
+ * connected to other rooms via exits. The exits are labelled, but are 
+ * not necessairly limited to: north, east, south, west.
+ * For each direction, the room stores a reference to the neighboring room.
+ * Rooms can be locked or not, and show the player a list of its items and
+ * characters.
  * 
- * @author  Michael Kölling and David J. Barnes
- * @version 2016.02.29
+ * @author  Lívia Mendes e Paulo Moura
  */
 public class Room 
 {

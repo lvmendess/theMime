@@ -1,11 +1,11 @@
 /**
  *  This class creates and initialises all the others: it creates all
- *  rooms, creates the parser and starts the game. It also evaluates and
- *  executes the commands that the parser returns.
+ *  rooms, creates the parser, characters and starts the game. 
+ *  It also evaluates and executes the commands that the parser returns.
  *  It is also responsible for managing all of the game and mediating
  *  interactions between classes without breaking encapsulation.
  * 
- * @author Lívia Mendes e Paulo Moura
+ * @author Lívia Mendes & Paulo Moura
  * @version 2024.01.09
  */
 import java.util.*;
@@ -37,9 +37,9 @@ public class Game
     private void createEndings() {
         String end1, end2, end3;
 
-        end1 = "you wake up in your bed, it was all a dream";
-        end2 = "you wake up in your bed, it was all a nightmare \n until you look into the mirror and you don't quite look like yourself \n you see the mime";
-        end3 = "you see the mime sitting in a cute chair while drinking a small tea with his pinky up\n and it kindly offers you some";
+        end1 = "You wake up in your bed, it was all a weird dream. You get on with your life.";
+        end2 = "You wake up in your bed, it was all a nightmare.\nUntil you look into the mirror and you don't quite look like yourself...\nYou see the mime.";
+        end3 = "You see the mime sitting in a cute chair while drinking a small tea with his pinky up\nIt kindly offers you some and you have a tea party!";
 
         endings.add(end1);
         endings.add(end2);
@@ -148,8 +148,10 @@ public class Game
         System.out.println();
         System.out.println("Welcome to The Mime!");
         System.out.println("You are a SCP agent and it's your duty to investigate this house due to reports of abnormal activity");
+        System.out.println();
         printHelp();
         System.out.print("Type 'help' if you need to see which commands you have again.");
+        System.out.println();
         printLocationInfo();//tarefa 2
     }
 
@@ -208,8 +210,7 @@ public class Game
 
     /**
      * Print out some help information.
-     * Here we print some stupid, cryptic message and a list of the 
-     * command words.
+     * Here we print a list of the command words.
      */
     private void printHelp() 
     {
@@ -219,6 +220,7 @@ public class Game
     /** 
      * Try to go in one direction. If there is an exit, enter
      * the new room, otherwise print an error message.
+     * Cleans go back once you finish the loop, so you can't go back. Duh.
      */
     private void goRoom(Command command) 
     {
@@ -249,7 +251,7 @@ public class Game
                     mime.move();
                 }
                 if (player.getCurrentRoom().isInitial()) {
-                    System.out.println("You hear the door lock itself behind you. You can't go back from here");
+                    System.out.println("You hear the door lock itself behind you. You can't go back from here.");
                 }
                 if (player.getCurrentRoom().isFinal()) {
                     wantToQuit = true;
@@ -263,14 +265,15 @@ public class Game
      * Type attack to attack the Mime
      * by default, uses the player's currently wielded item to do so but it has to be either a firearm or a knife,
      * both of which behave the same way (with a few exceptions)
+     * Creates the Mime's counterattack
      */
     private void attack(Command command) {
         if (command.hasSecondWord()) {
-            System.out.println("i know it's to attack the mime, you don't need to tell me");
+            System.out.println("I know it's to attack the mime, you don't need to tell me");
         }
         if (player.getWieldingItem() != null) { //checks whether the player is wielding an item
             if (player.getWieldingItem().getItemCode() != 1) {
-                System.out.println("you need a firearm to attack");
+                System.out.println("You need a firearm to attack");
             } else {
                 getBehavior(1);
                 double prob = Math.abs(probability.nextGaussian()) / 2;
@@ -531,11 +534,9 @@ public class Game
                 if (player.getWieldingItem().getItemCode() == itemCode) {
                     if (player.getCurrentRoom().equals(mime.getCurrentRoom())) {
                         double x = player.getWieldingItem().getDamage() / 1000;
-                        System.out.println(x); // debug, remover
                         player.getWieldingItem().changeLifespan(-1);
                         mime.setDefense(-x);
                         System.out.println("it looks like the mime got dizzy, it's visibly weaker.");
-                        System.out.println(mime.getDefense()); // debug, remover
                         if (player.getWieldingItem().getItemLifespan() == 0) {
                             player.removeFromInventory(player.getWieldingItem().getItemName());
                             System.out.println(player.getWieldingItem().getItemName() + " broke");

@@ -6,7 +6,7 @@
  *  interactions between classes without breaking encapsulation.
  * 
  * @author Lívia Mendes e Paulo Moura
- * @version 2024.01.08
+ * @version 2024.01.09
  */
 import java.util.*;
 public class Game 
@@ -18,8 +18,7 @@ public class Game
     private Random probability = new Random();
     private boolean wantToQuit;
     private ArrayList<Room> rooms = new ArrayList<>();
-    private ArrayList<Ending> endings = new ArrayList<>();
-    private int endingIndex;
+    private ArrayList<String> endings = new ArrayList<>();
     private String gameEnding;
         
     /**
@@ -30,21 +29,17 @@ public class Game
         createRooms();
         createEndings();
         parser = new Parser();
-        endingIndex = probability.nextInt(0, endings.size()); //not working, needs to be fixed
-        gameEnding = endings.get(endingIndex).getEnding(endingIndex);
     }
 
     /*
      * Create game endings
      */
     private void createEndings() {
-        Ending end1, end2, end3;
+        String end1, end2, end3;
 
-        end1 = new Ending("you wake up in your bed, it was all a dream");
-        end2 = new Ending(
-                "you wake up in your bed, it was all a nightmare \n until you look into the mirror and you don't see yourself \n you see the mime");
-        end3 = new Ending(
-                "you see the mime sitting in a cute chair while drinking a little tea \n and it kindly offers you some");
+        end1 = "you wake up in your bed, it was all a dream";
+        end2 = "you wake up in your bed, it was all a nightmare \n until you look into the mirror and you don't quite look like yourself \n you see the mime";
+        end3 = "you see the mime sitting in a cute chair while drinking a small tea with his pinky up\n and it kindly offers you some";
 
         endings.add(end1);
         endings.add(end2);
@@ -59,10 +54,23 @@ public class Game
         Room room1, room2, room3, room4, endRoom;
       
         // create the rooms
-        room1 = new Room("at the lounge", true, false, false);
-        room2 = new Room("at the living room", false, false,false);
-        room3 = new Room("at the kitchen", false, false, false);
-        room4 = new Room("at the bedroom", false, false, false);
+        room1 = new Room("at what seems to be a lounge.\nEverything looks dirty and worn over time, and the atmosphere is laden with the foul stench of mold and rot."
+                        + "\nThe frames on the wall show people with bizarrely distorted faces.\nYou walk in carpet and see a couch of crumbling and wormy wood next "
+                        + "to a rusty metal table", true, false, false);
+
+        room2 = new Room("at a dining room.\nThe only source of light is a dim chandelier that hangs above a long wooden table.\nThe table is covered by "
+                        + "a dirty cloth and some rotten food.\nThe chairs look old, some of them knocked over or broken.\nThere is an old hanged clock "
+                        +"that spins inconsistently, making it hard to tell the time", false, false,false);
+
+        room3 = new Room("at a kitchen.\nYou can hear water dripping from the sink and the floor creaking as you move.\nThe cabinets are falling apart, "
+                        + "but above them you notice cutlery hanging on the wall", false, false, false);
+
+        room4 = new Room("at a bedroom.\nThe place looks dark and somber, illuminated by a single flickering light bulb.\nThe bed is torn and "
+                        + "stained, and the sheets are soaked in a gross fluid you can't tell apart.\nThe floor is littered with trash, but some " 
+                        + "things in it catch your attention", false, false, false);
+
+        gameEnding = endings.get(probability.nextInt(3));
+
         endRoom = new Room(gameEnding, false, true, true);
 
         rooms.add(room1);
@@ -85,7 +93,7 @@ public class Game
 
 
         //add items
-        room1.addItem("shotgun", "a lightweight short-range shotgun", 3.5, 6, 100.0, 1);
+        room1.addItem("shotgun", "a lightweight short-range shotgun", 3.5, 6, 400.0, 1);
         room2.addItem("ammunition", "a six bullet ammunition clip.", 0.5, 6, 0, 2);
         room2.addItem("flashlight", "a simple flashlight. it seems to be working.", 0.2, 10, 50, 4);
         room3.addItem("knife", "a kitchen knife", 0.2, 1000, 35, 1);
@@ -139,8 +147,7 @@ public class Game
     {
         System.out.println();
         System.out.println("Welcome to The Mime!");
-        System.out.println(
-                "You are a SCP agent and it's your duty to investigate this house due to reports of abnormal activity");
+        System.out.println("You are a SCP agent and it's your duty to investigate this house due to reports of abnormal activity");
         printHelp();
         System.out.print("Type 'help' if you need to see which commands you have again.");
         printLocationInfo();//tarefa 2
@@ -235,7 +242,7 @@ public class Game
                 System.out.println("There is no door!");
             } else {
                 if(mime.getCurrentRoom().equals(player.getCurrentRoom())){
-                    mime.metPlayer();
+                    mime.allowMove(true);
                 }
                 player.move(nextRoom);
                 if (mime.getHealth() > 0) {
@@ -302,6 +309,7 @@ public class Game
                 }
                 System.out.println(allHealthStatus());
                 if (mime.getHealth() == 0) {
+                    mime.changeDescription("the mime lies on the floor in front of you, dead");
                     playerWon();
                 }
                 if (player.getHealth() == 0) {
@@ -484,6 +492,7 @@ public class Game
     private void playerWon() {
         System.out.println("you've sucessfully defeated the mime and it has left something, take a look");
         Item key = new Item("key", "a golden key appeared on the floor, you can use it to unlock a certain door", 0.05, 1, 0, 5);
+        mime.allowMove(false);
         player.getCurrentRoom().addItem("key", key);
     }
 

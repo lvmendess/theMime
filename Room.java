@@ -111,6 +111,13 @@ public class Room
     public String getLongDescription() //tarefa 7
     {
         longDescription = "You are " + description;
+
+        if (characters.size() > 0) {
+            for (Character character : characters) {
+                longDescription += "\n"+character.getDescription();
+            }
+        }
+
         if (items.size() != 0) {
             for (String itemName : items.keySet()) {
                 longDescription += "\nThere is ";
@@ -121,12 +128,6 @@ public class Room
             longDescription += "\nNo items here";
         }
         longDescription += "\n" + "Exits:" + getExitString();
-
-        if (characters.size() > 0) {
-            for (Character character : characters) {
-                longDescription += "\n"+character.getDescription();
-            }
-        }
 
         return longDescription;
     }
@@ -178,5 +179,8 @@ public class Room
         return exists;
     }
     
+    public void changeDescription(String newDescription) {
+        description = newDescription;
+    }
     
 }

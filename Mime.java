@@ -6,7 +6,7 @@ public class Mime extends Character {
     private double attack;
     private Random roomSeletor = new Random();
     private ArrayList<String> exits;
-    private boolean firstMeet = false;
+    private boolean canMove = false;
     private int attackStreak = 0;
     private double defense;
 
@@ -23,8 +23,8 @@ public class Mime extends Character {
         return currentRoom;
     }
 
-    public void metPlayer(){
-        firstMeet = true;
+    public void allowMove(boolean move){
+        canMove = move;
     }
     
     public double getAttack() {
@@ -58,7 +58,7 @@ public class Mime extends Character {
     }
 
     public void move() {
-        if(firstMeet){
+        if(canMove){
             exits = currentRoom.roomsList(); //accesses the exits of the current room
             int x = roomSeletor.nextInt(0, exits.size()); //randomly selects the next room
             Room nextRoom = currentRoom.getExit(exits.get(x)); //moves Mime to the chosen exit
